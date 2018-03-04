@@ -38,8 +38,8 @@
      CHILD = TAG | TEXT
      TEXT = #'[a-zA-Z0-9]+' | \"'\"      (* Add more symbol *)
      QUOTE_STRING = (SINGLE_QUOTE_STRING | DOUBLE_QUOTE_STRING)
-     SINGLE_QUOTE_STRING = #\"('.*?')\"
-     DOUBLE_QUOTE_STRING = #'(\".*?\")'
+     SINGLE_QUOTE_STRING = #\"'([^\\']|\\\\|\\')*'\"
+     DOUBLE_QUOTE_STRING = #'\"([^\\\"]|\\\\|\\\")*\"'
      WHITESPACE = ' '*
      ID = WHITESPACE #'[a-zA-Z]+[a-zA-Z0-9]*' WHITESPACE
      OPENTAG = '<' HEAD '>'
@@ -69,7 +69,7 @@
 
 ;; Simple test
 (def stms
-  ["<a href='1dsfsd--23321'>Link</a>"
+  ["<a href=\"1dsfsd--23'321\">Link</a>"
    "<aa/>"
    "<aa><b/></aa>"
    "<aa>TEXT</aa>"
