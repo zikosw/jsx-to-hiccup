@@ -37,12 +37,15 @@
      SELF_CLOSE_TAG = '<' HEAD '/>'
      CHILD = TAG | TEXT
      TEXT = #'[a-zA-Z0-9]+' | \"'\"      (* Add more symbol *)
+     QUOTE_STRING = (SINGLE_QUOTE_STRING | DOUBLE_QUOTE_STRING)
+     SINGLE_QUOTE_STRING = #\"('.*?')\"
+     DOUBLE_QUOTE_STRING = #'(\".*?\")'
      WHITESPACE = ' '*
      ID = WHITESPACE #'[a-zA-Z]+[a-zA-Z0-9]*' WHITESPACE
      OPENTAG = '<' HEAD '>'
      KEY = ID                     (* it can be more than id eg. col-md-9 *)
      QUOTE = '\"' | \"'\"
-     VALUE = QUOTE TEXT QUOTE | INLINE_JS
+     VALUE = QUOTE_STRING | INLINE_JS
      ATTR = WHITESPACE KEY '=' VALUE WHITESPACE
      BATTR = KEY
      ATTRS = (ATTR | BATTR)*
@@ -54,11 +57,19 @@
      INLINE_JS = '{' DATA '}'              (* Add more symbol *)
     "))
 
+(def lookahead-example
+  (ip/parser
+    "S = &'\"' STR
+     STR = #'(.+)'"))
+
+(def lookahead-example2
+  (ip/parser
+    "STR = #'\"(.+?)\"'"))
 ;; TODO: need unit test that run every save, so we don't need to re-check each statement manually
 
 ;; Simple test
 (def stms
-  ["<a href={'123321'}>Link</a>"
+  ["<a href='1dsfsd--23321'>Link</a>"
    "<aa/>"
    "<aa><b/></aa>"
    "<aa>TEXT</aa>"
