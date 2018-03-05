@@ -9,9 +9,15 @@
     ;(utils/obj->clj)))
 
 (defn parse [code]
-  (let [parsed
+  (let [trimed
+        (-> code
+          (string/split-lines)
+          (->>
+            (map string/trim)
+            (string/join "")))
+        parsed
         (try
-          (acorn/parse code (clj->js {:plugins {:jsx true}}))
+          (acorn/parse trimed (clj->js {:plugins {:jsx true}}))
           (catch js/Error e
             (prn :parse code)
             (prn :parse-error e)
@@ -28,10 +34,10 @@
         up-f (string/lower-case f)]
     (= f up-f)))
 
-(defn get-name [name]
+(defn get-tag [name]
   (if (is-not-capital-case name)
     (keyword name)
-    name))
+    (symbol name)))
 
 
 (def JSLiteral "Literal")
@@ -116,13 +122,27 @@
       (condp = (get ast :type)
         JSXElement
         (let [-name (get-in ast [:openingElement :name :name])
-              name (get-name -name)
+              name (get-tag -name)
               -attrs (get-in ast [:openingElement :attributes])
               attrs (to-attrs -attrs)
               children (get ast :children)]
-          (if (empty? children)
+          (cond
+            (and (empty? attrs)
+                 (empty? children))
+            [name]
+
+            (and (not (empty? attrs))
+                 (empty? children))
             [name attrs]
+
+            (and (empty? attrs)
+                 (not (empty? children)))
+            [name (to-hiccup children)]
+
+            (and (not (empty? attrs))
+                 (not (empty? children)))
             [name attrs (to-hiccup children)]))
+
         JSXText
         (let [value (get ast :value)]
           value)
