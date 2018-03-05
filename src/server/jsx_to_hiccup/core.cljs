@@ -39,20 +39,24 @@
    "<div hidden>{var1==88&&var2&&<p>True</p>}</div>"
    "<div hide k1=\"v1\" >block</div>"
    "<div hidden k1=\"v1\" k2=\"v2\">block</div>"
-   "<div hidden k1=\"v1\" k2={val2} k3={null} k4={99} k5={<img src=\"google.com\"/>}><p>Hello</p><p>World</p></div>"
+   "<div hidden k1={\"text\"} k1=\"v1\" k2={val2} k3={null} k4={99} k5={<img src=\"google.com\"/>}><p>Hello</p><p>World</p></div>"
    "<div hidden k1=\"v1\" k2={val2} k3={null} k4={99}><p>Hello</p><p>World</p></div>"
    "<div hidden k1=\"v1\" k2=\"v2\"><img src=\"gogle\"/></div>"
    "<div hidden k1=\"v1\" show k2=\"v2\" disabled>block</div>"
    "<div hidden k1=\"v1\" k2=\"v2\" disabled>block</div>"])
-
+cljs.reader/read-js
 (defn test-stm []
   (filter #(nil? (:res %)) (map parse-test stms)))
 
 (comment
-  (-> (get stms 8)
+  (-> (get stms 11)
       h/parse
       h/to-hiccup)
+      ;str)
+      ;cljs.reader/read-string)
       ;prn)
+      ;hi/to-str)
+
   (h/parse (get stms 8))
   (h/parse-debug (get stms 8))
   (test-stm)
@@ -61,5 +65,12 @@
   (h/get-name "div")
   (h/get-name "Div")
   (parse-test "<p>Hello<p>")
+
+  (cljs.pprint/write
+    (quote
+     (defn prime? [n known](loop [cnt (dec (count known)) acc []](if (< cnt 0) (not (any? acc)))))
+     (recur (dec cnt) (concat acc [(zero? (mod n (nth known cnt)))]))))
+                        ;:dispatch clojure.pprint/code-dispatch))))
+
   (h/parse "<p>Hello</p>"))
   ;(utils/obj->clj (acorn/parse "<p>Hello</p>" (clj->js {:plugins {:jsx true}}))))

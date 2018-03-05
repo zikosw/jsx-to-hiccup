@@ -76,8 +76,13 @@
 (def BooleanAttribute "BooleanAttribute")
 
 
-
-
+(defn get-operator-symbol [operator]
+  (case operator
+    "==" (symbol "=")
+    "!=" (symbol "not=")
+    "&&" (symbol "and")
+    "||" (symbol "or")
+    (symbol operator)))
 
 
 (defn to-hiccup [ast]
@@ -130,26 +135,26 @@
         JSIdentifier
         ;; TODO: gen unique ID, add it to ID table and use it again when render hicup to text
           (let [val (get ast :name)]
-            (keyword :identifier val))    ;; This is ID not value, Quote this or do something with it.
-        ;
+            (symbol val))
         JSLiteral
         (let [val (get ast :value)]
           val)
 
         JSLogicalExpression
-        (let [operator (keyword :logical-operator (get ast :operator))
+        (let [operator (get-operator-symbol (get ast :operator))
+              ;; TODO: create get logical-operator fn
               left (to-hiccup (get ast :left))
               right (to-hiccup (get ast :right))
               right-type (get-in ast [:right :type])]
-          (if (some #{} [JSIdentifier JSLiteral])
-            [operator left right]
-            [:symbol/if left :then right]))
+          (list (symbol "if") ;; TODO: check operator first
+                (list operator left right)))
 
         JSBinaryExpression
-        (let [operator (keyword :binary-operator (get ast :operator))
+        (let [operator (get-operator-symbol (get ast :operator))
+              ;; TODO: create get binary-operator fn
               left (to-hiccup (get ast :left))
               right (to-hiccup (get ast :right))]
-          [operator left right])
+          (list operator left right))
 
         [:default (get ast :type) (= JSXElement (get ast :type))])
       :else :unknown)))
