@@ -153,7 +153,6 @@
 
         ;; JavaScript
         JSIdentifier
-        ;; TODO: gen unique ID, add it to ID table and use it again when render hicup to text
           (let [val (get ast :name)]
             (symbol val))
         JSLiteral
@@ -162,16 +161,14 @@
 
         JSLogicalExpression
         (let [operator (get-operator-symbol (get ast :operator))
-              ;; TODO: create get logical-operator fn
               left (to-hiccup (get ast :left))
               right (to-hiccup (get ast :right))
               right-type (get-in ast [:right :type])]
-          (list (symbol "if") ;; TODO: check operator first
+          (list (symbol "if")
                 (list operator left right)))
 
         JSBinaryExpression
         (let [operator (get-operator-symbol (get ast :operator))
-              ;; TODO: create get binary-operator fn
               left (to-hiccup (get ast :left))
               right (to-hiccup (get ast :right))]
           (list operator left right))

@@ -16,3 +16,4 @@ pom.xml.asc
 /node_modules
 *.iml
 .idea/
+public/js/compiled/

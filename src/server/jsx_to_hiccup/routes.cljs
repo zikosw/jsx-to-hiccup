@@ -11,7 +11,8 @@
         [:html
          [:head
           [:link {:rel "stylesheet" :href "/css/site.css"}]
-          ]
+          [:script {:src "js/compiled/app.js"}]]
+
          [:body
           [:h2 "Hello World!"]
           [:p
@@ -37,3 +38,5 @@
   (if-let [{:keys [handler route-params]} (bidi/match-route* routes (:uri req) req)]
     (handler (assoc req :route-params route-params) res raise)
     (not-found req res raise)))
+
+

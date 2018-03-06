@@ -25,6 +25,23 @@
   :target-path "target"
   :profiles
   {:server {:clean-targets ["target"]}
+   :browser {:clean-targets ["public/js/compiled"]}
+   :browser-dev
+   [:browser
+    {:cljsbuild
+               {:builds {:dev
+                         {:source-paths ["src/browser"]
+                          :figwheel true
+                          :compiler {:main jsx-to-hiccup.app
+                                     :asset-path "js/compiled/dev/out"
+                                     :output-to "public/js/compiled/app.js"
+                                     :output-dir "public/js/compiled/dev/out"
+                                     :source-map-timestamp true}}}}
+     :figwheel {:http-server-root "public"
+                :nrepl-port 7001
+                :reload-clj-files {:clj true :cljc true}
+                :server-port 3450
+                :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}]
    :dev
    [:server
     {:npm {:package {:main "target/out/jsx-to-hiccup.js"
@@ -78,18 +95,30 @@
                       :language-in   :ecmascript5
                       :target        :nodejs
                       :optimizations :simple
-                      :pretty-print  false}}}}}}
+                      :pretty-print  false}}
+      :release-browser
+      {:source-paths ["src/browser"]
+       :compiler {:main jsx-to-hiccup.app
+                  :asset-path "js/compiled/out"
+                  :output-to "public/js/compiled/app.js"
+                  :output-dir "public/js/compiled/out"
+                  :optimizations :advanced
+                  :pretty-print false
+                  :source-map "public/js/compiled/app.js.map"}}}}}}
 
   :aliases
   {"build" ["do"
             ["clean"]
             ["npm" "install"]
             ["figwheel" "dev"]]
+   "build-browser" ["do"
+                    ["with-profile" "browser-dev" "figwheel" "dev"]]
    "package" ["do"
               ["clean"]
               ["npm" "install"]
               ["with-profile" "release" "npm" "init" "-y"]
-              ["with-profile" "release" "cljsbuild" "once" "release"]]
+              ["with-profile" "release" "cljsbuild" "once" "release"]
+              ["with-profile" "release" "cljsbuild" "once" "release-browser"]]
 
    "test" ["do"
            ["npm" "install"]
