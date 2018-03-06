@@ -3,7 +3,7 @@
     [jsx-to-hiccup.config :refer [env]]
     [jsx-to-hiccup.middleware :refer [wrap-defaults]]
     [jsx-to-hiccup.routes :refer [router]]
-    [hiccup.core :as h]
+    [generate.core :as h]
     [macchiato.server :as http]
     [macchiato.middleware.session.memory :as mem]
     [mount.core :as mount :refer [defstate]]
@@ -18,7 +18,7 @@
       {:handler    (wrap-defaults router)
        :host       host
        :port       port
-       :on-success #(info "jsx-to-hiccup started on" host ":" port)})))
+       :on-success #(info "jsx-to-generate started on" host ":" port)})))
 
 
 
@@ -29,6 +29,7 @@
 
 (def stms
   ["<a href=\"1dsfsd--23'321\">Link</a>"
+   "<div className=\"shopping-list\">\n        <h1>Shopping List for {this.props.name}</h1>\n        <ul>\n          <li>Instagram</li>\n          <li>WhatsApp</li>\n          <li>Oculus</li>\n        </ul>\n      </div>"
    "<aa/>"
    "<aa><b/></aa>"
    "<aa>TEXT</aa>"
@@ -44,7 +45,7 @@
    "<div hidden k1=\"v1\" k2=\"v2\"><img src=\"gogle\"/></div>"
    "<div hidden k1=\"v1\" show k2=\"v2\" disabled>block</div>"
    "<div hidden k1=\"v1\" k2=\"v2\" disabled>block</div>"])
-cljs.reader/read-js
+
 (defn test-stm []
   (filter #(nil? (:res %)) (map parse-test stms)))
 

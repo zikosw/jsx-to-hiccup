@@ -1,4 +1,4 @@
-(ns hiccup.utils
+(ns generate.utils
   (:require [goog :as goog]
             [goog.object :as gobj]))
 

@@ -1,12 +1,11 @@
-(ns hiccup.core
+(ns generate.core
   (:require ["acorn-jsx" :as acorn]
-            [hiccup.utils :as utils]
+            [generate.utils :as utils]
             [clojure.string :as string]))
 
 (defn parse-debug [code]
   (-> code
     (acorn/parse (clj->js {:plugins {:jsx true}}))))
-    ;(utils/obj->clj)))
 
 (defn parse [code]
   (let [trimed
@@ -45,6 +44,7 @@
 (def JSAssignmentExpression "AssignmentExpression")
 (def JSLogicalExpression "LogicalExpression")
 (def JSBinaryExpression "BinaryExpression")
+(def JSMemberExpression "MemberExpression")
 
 
 ;; Element
