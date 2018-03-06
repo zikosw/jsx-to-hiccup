@@ -1,0 +1,23 @@
+{
+  "name": "hiccup-gen",
+  "version": "0.0.9",
+  "author": "supakorn@jigko.net",
+  "scripts": {
+    "watch": "webpack -d --watch",
+    "js": "webpack -p",
+    "cljs": "lein figwheel",
+    "rcljs": "rlwrap lein figwheel",
+    "start": "yarn js&&yarn cljs",
+    "clean": "lein do clean",
+    "build": "lein do clean, cljsbuild once min",
+    "deploy": "firebase deploy"
+  },
+  "dependencies": {
+    "@cljs-oss/module-deps": "^1.1.1",
+    "acorn-jsx": "^4.1.1",
+    "react": "15.6.1",
+    "react-avatar": "2.3.0",
+    "react-dom": "15.6.1",
+    "webpack": "^3.8.1"
+  }
+}
