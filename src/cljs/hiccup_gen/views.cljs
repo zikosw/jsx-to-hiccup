@@ -1,15 +1,45 @@
 (ns hiccup-gen.views
   (:require [re-frame.core :as re-frame]
-            [hiccup-gen.subs :as subs]
-            ))
+            [generate.core :as g]
+            [reagent.core :refer [atom]]
+            [hiccup-gen.subs :as subs]))
 
+(def state (atom {:code "" :hiccuped ""}))
+
+(defn convert-clicked []
+  (prn :convert-clicked)
+  (let [parsed (g/parse (:code @state))
+        hiccuped (-> parsed g/to-hiccup)
+        pretty (with-out-str (cljs.pprint/pprint hiccuped))]
+    ;(prn :parsed parsed)
+    (prn :hiccup hiccuped)
+    (cljs.pprint/pprint hiccuped)
+    (prn :pretty pretty)
+    (swap! state assoc :hiccuped pretty)))
+
+(defn on-code-changed [e]
+  (let [code (-> e .-target .-value)]
+    (prn :code-changed code)
+    (swap! state assoc :code code)))
 
 ;; home
 
 (defn home-panel []
-  (let [name (re-frame/subscribe [::subs/name])]
+  (let [name (re-frame/subscribe [::subs/name])
+        hiccuped (:hiccuped @state)]
+    (prn :state @state)
     [:div (str "Hello from " @name ". This is the Home Page.")
-     [:div [:a {:href "#/about"} "go to About Page"]]]))
+     [:div
+      [:div
+        [:p "Put JS code here"]
+        [:textarea {:style {:height 300
+                            :width 400}
+                    :on-change on-code-changed}]]
+      [:button {:on-click convert-clicked} "Convert"]
+      [:hr]
+      [:h3 "Hiccup Output"
+       [:div
+        [:pre hiccuped]]]]]))
 
 
 ;; about
