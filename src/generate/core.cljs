@@ -72,6 +72,8 @@
 (def JSThisExpression "ThisExpression")
 (def JSArrowFunctionExpression "ArrowFunctionExpression")
 (def JSBlockStatement "BlockStatement")
+(def JSStringLiteral "StringLiteral")
+(def JSNumericLiteral "NumericLiteral")
 
 
 
@@ -127,16 +129,10 @@
                         val (get-in attr [:value :value])
                         val-type (get-in attr [:value :type] BooleanAttribute)]
                     (condp = val-type
-                      JSLiteral
-                      [attr-key val]
-
-                      JSXExpressionContainer
-                      (let [node (get-in attr [:value :expression])]
-                        [attr-key (to-hiccup node)])
                       BooleanAttribute
                       [attr-key true]
                       ;; unmatch
-                      [attr-key val-type])))
+                      [attr-key (-> attr :value to-hiccup)])))
 
         to-attrs (fn [attrs] (into {} (map to-attr attrs)))]
     (cond
@@ -187,6 +183,7 @@
         ;(let [value (get ast :value)]
         ;  value)
 
+
         JSXExpressionContainer
         (let [node (get ast :expression)]
           (to-hiccup node))
@@ -211,13 +208,20 @@
         (let [val (get ast :value)]
           val)
 
+        JSStringLiteral
+        (-> ast :value)
+
+        JSNumericLiteral
+        (-> ast :value)
+
         JSLogicalExpression
         (let [operator (-> ast :operator get-operator-symbol)
               left (-> ast :left to-hiccup)
               right (-> ast :right to-hiccup)
               right-type (get-in ast [:right :type])]
           (list (symbol "if")
-                (list operator left right)))
+                (list operator left)
+                (list right)))
 
         JSBinaryExpression
         (let [operator (get-operator-symbol (get ast :operator))
