@@ -30,7 +30,11 @@
 (def stms
   ["<a href=\"1dsfsd--23'321\">Link</a>"
    "<div className=\"shopping-list\">\n        <h1>Shopping List for {this.props.name}</h1>\n        <ul>\n          <li>Instagram</li>\n          <li>WhatsApp</li>\n          <li>Oculus</li>\n        </ul>\n      </div>"
-   "<aa/>"
+   "<aa style={{a:99, b:c, d:{e:nil}, f:<img src={URL}/>, g:x.y}}/>"
+   "a.b.c"
+   "a==b"
+   "<p>Hi</p>"
+   "<Tab.Header />"
    "<aa><b/></aa>"
    "<aa>TEXT</aa>"
    "<aa><b></b></aa>"
@@ -50,7 +54,7 @@
   (filter #(nil? (:res %)) (map parse-test stms)))
 
 (comment
-  (-> (get stms 11)
+  (-> (get stms 6)
       h/parse
       h/to-hiccup)
       ;str)
@@ -58,7 +62,7 @@
       ;prn)
       ;hi/to-str)
 
-  (h/parse (get stms 8))
+  (h/parse (get stms 3))
   (h/parse-debug (get stms 8))
   (test-stm)
   (h/is-not-capital-case "asdf") ; true

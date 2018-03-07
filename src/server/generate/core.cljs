@@ -45,6 +45,7 @@
 (def JSLogicalExpression "LogicalExpression")
 (def JSBinaryExpression "BinaryExpression")
 (def JSMemberExpression "MemberExpression")
+(def JSObjectExpression "ObjectExpression")
 
 
 ;; Element
@@ -121,8 +122,10 @@
       is-map
       (condp = (get ast :type)
         JSXElement
-        (let [-name (get-in ast [:openingElement :name :name])
-              name (get-tag -name)
+        (let [;-name (get-in ast [:openingElement :name :name])
+              ;name (get-tag -name)
+              name (-> (get-in ast [:openingElement :name])
+                       to-hiccup)
               -attrs (get-in ast [:openingElement :attributes])
               attrs (to-attrs -attrs)
               children (get ast :children)]
@@ -143,6 +146,15 @@
                  (not (empty? children)))
             [name attrs (to-hiccup children)]))
 
+        JSXIdentifier
+        (let [name (-> ast :name)]
+            (get-tag name))
+
+        JSXMemberExpression
+        (let [left (-> ast :object to-hiccup)
+              right (-> ast :property to-hiccup)]
+          (get-tag (str left "." right)))
+
         JSXText
         (let [value (get ast :value)]
           value)
@@ -153,27 +165,45 @@
 
         ;; JavaScript
         JSIdentifier
-          (let [val (get ast :name)]
-            (symbol val))
+          (let [val (get ast :name)
+                type (get ast :internal-type)]
+            (case type
+              :Key
+              (keyword val)
+              (symbol val)))
         JSLiteral
         (let [val (get ast :value)]
           val)
 
         JSLogicalExpression
-        (let [operator (get-operator-symbol (get ast :operator))
-              left (to-hiccup (get ast :left))
-              right (to-hiccup (get ast :right))
+        (let [operator (-> ast :operator get-operator-symbol)
+              left (-> ast :left to-hiccup)
+              right (-> ast :right to-hiccup)
               right-type (get-in ast [:right :type])]
           (list (symbol "if")
                 (list operator left right)))
 
         JSBinaryExpression
         (let [operator (get-operator-symbol (get ast :operator))
-              left (to-hiccup (get ast :left))
-              right (to-hiccup (get ast :right))]
+              left (-> ast :left to-hiccup)
+              right (-> ast :right to-hiccup)]
           (list operator left right))
 
-        [:default (get ast :type) (= JSXElement (get ast :type))])
+        JSObjectExpression
+        (let [props (get ast :properties)]
+          (into {}
+            (for [p props]
+              (let [k (-> p :key (assoc :internal-type :Key) to-hiccup)
+                    v (-> p :value to-hiccup)]
+                    ;v (-> p :value (assoc :internal-type :ObjectExpressionValue))]
+                [k v]))))
+
+        JSMemberExpression
+        (let [left (-> ast :object to-hiccup)
+              right (-> ast :property to-hiccup)]
+          (symbol (str left "." right)))
+
+        [:unknown-type (get ast :type) (= JSXElement (get ast :type))])
       :else :unknown)))
 
 
