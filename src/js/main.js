@@ -4,6 +4,7 @@ window.deps = {
     'react-dom-server': require('react-dom/server'),
     //'react-avatar' : require('react-avatar'),
     'acorn-jsx': require('acorn-jsx')
+    //'babylon': require('babylon')
 };
 
 window.React = window.deps['react'];

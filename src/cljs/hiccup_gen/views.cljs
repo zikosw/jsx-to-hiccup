@@ -1,6 +1,7 @@
 (ns hiccup-gen.views
   (:require [re-frame.core :as re-frame]
             [generate.core :as g]
+            [cljs.pprint :as pp]
             [reagent.core :refer [atom]]
             [hiccup-gen.subs :as subs]))
 
@@ -10,14 +11,15 @@
   (prn :convert-clicked)
   (let [parsed (g/parse (:code @state))
         hiccuped (-> parsed g/to-hiccup)
-        pretty (with-out-str (cljs.pprint/pprint hiccuped))]
+        pretty (with-out-str (pp/pprint hiccuped))]
     ;(prn :parsed parsed)
     (prn :hiccup hiccuped)
-    (cljs.pprint/pprint hiccuped)
+    (pp/pprint hiccuped)
     (prn :pretty pretty)
     (swap! state assoc :hiccuped pretty)))
 
 (defn on-code-changed [e]
+  (prn :code-changed)
   (let [code (-> e .-target .-value)]
     (prn :code-changed code)
     (swap! state assoc :code code)))

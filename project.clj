@@ -50,8 +50,10 @@
      :source-paths ["src/cljs"]
      :compiler     {:main            hiccup-gen.core
                     :output-to       "resources/public/js/compiled/app.js"
-                    :optimizations   :advanced
+                    :optimizations   :whitespace
                     :closure-defines {goog.DEBUG false}
+                    :foreign-libs [{:file "public/js/bundle.js"
+                                    :provides ["cljsjs.react" "cljsjs.react.dom" "webpack.bundle"]}]
                     :pretty-print    false}}
 
     {:id           "test"

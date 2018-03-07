@@ -2,7 +2,6 @@
   (:require [webpack.bundle]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [generate.core :as g]
             [hiccup-gen.events :as events]
             [hiccup-gen.routes :as routes]
             [hiccup-gen.views :as views]
@@ -11,7 +10,6 @@
 
 (defn dev-setup []
   (when config/debug?
-    (enable-console-print!)
     (prn :dev :Dev)
     (println "dev mode")))
 
@@ -21,6 +19,7 @@
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
+  (enable-console-print!)
   (routes/app-routes)
   (re-frame/dispatch-sync [::events/initialize-db])
   (dev-setup)
