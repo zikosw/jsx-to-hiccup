@@ -9,8 +9,8 @@
 
 (defn convert-clicked []
   (swap! state assoc :error nil)
-  (prn :code (:code @state))
-  (prn :code-- (g/trim (:code @state)))
+  ;(prn :code (:code @state))
+  ;(prn :code-- (g/trim (:code @state)))
   (try
     (let [parsed (g/parse (:code @state))
           hiccuped (-> parsed g/to-hiccup)

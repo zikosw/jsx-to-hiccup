@@ -37,6 +37,7 @@
                            :output-to "resources/public/js/compiled/hiccup_gen.js"
                            :output-dir "resources/public/js/compiled/out"
                            :source-map-timestamp true
+                           :optimizations :none
                            :foreign-libs [{:file "resources/public/js/bundle.js"
                                            :provides ["cljsjs.react" "cljsjs.react.dom" "webpack.bundle"]}]
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
@@ -53,7 +54,7 @@
                            :main hiccup-gen.core
                            :foreign-libs [{:file "resources/public/js/bundle.js"
                                            :provides ["cljsjs.react" "cljsjs.react.dom" "webpack.bundle"]}]
-                           :optimizations :advanced
+                           :optimizations :whitespace
                            :closure-defines {goog.DEBUG false}
                            :infer-externs true
                            :source-map-timestamp true

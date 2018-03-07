@@ -39,7 +39,7 @@
       (string/split-lines)
       (->>
         (map string/trim)
-        (string/join " "))))
+        (string/join "\n"))))
 
 (defn parse [code]
   (-> code
@@ -141,7 +141,7 @@
         to-attrs (fn [attrs] (into {} (map to-attr attrs)))]
     (cond
       is-vector
-      (let [res (map to-hiccup ast)
+      (let [res (filter #(not= "" %) (map to-hiccup ast))
             cnt (count res)]
         (if (= cnt 1)
           (first res)
@@ -183,8 +183,9 @@
           (get-tag (str left "." right)))
 
         JSXText
-        (let [value (get ast :value)]
-          value)
+        (-> ast :value string/trim)
+        ;(let [value (get ast :value)]
+        ;  value)
 
         JSXExpressionContainer
         (let [node (get ast :expression)]
