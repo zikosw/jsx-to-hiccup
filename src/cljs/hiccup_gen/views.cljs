@@ -30,7 +30,7 @@
   (let [name (re-frame/subscribe [::subs/name])
         hiccuped (:hiccuped @state)]
     (prn :state @state)
-    [:div (str "Hello from " @name ". This is the Home Page.")
+    [:h1 "Convert JSX to Hiccup"
      [:div
       [:div
         [:p "Put JS code here"]
