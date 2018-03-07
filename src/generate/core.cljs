@@ -65,6 +65,7 @@
 (def JSIdentifier "Identifier")
 (def JSAssignmentExpression "AssignmentExpression")
 (def JSLogicalExpression "LogicalExpression")
+(def JSConditionalExpression "ConditionalExpression")
 (def JSBinaryExpression "BinaryExpression")
 (def JSMemberExpression "MemberExpression")
 (def JSObjectExpression "ObjectExpression")
@@ -219,9 +220,16 @@
               left (-> ast :left to-hiccup)
               right (-> ast :right to-hiccup)
               right-type (get-in ast [:right :type])]
+          (list operator left right))
+
+        JSConditionalExpression
+        (let [test (-> ast :test to-hiccup)
+              consequent (-> ast :consequent to-hiccup)
+              alternate (-> ast :alternate to-hiccup)]
           (list (symbol "if")
-                (list operator left)
-                (list right)))
+                test
+                consequent
+                alternate))
 
         JSBinaryExpression
         (let [operator (get-operator-symbol (get ast :operator))
