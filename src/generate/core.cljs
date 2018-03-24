@@ -4,36 +4,6 @@
             [generate.utils :as utils]
             [clojure.string :as string]))
 
-
-(comment
-  (let [bbpp (aget js/window.deps "babylon" "parse")]
-    (->
-       ;"
-       ;<CodeMirror
-       ;    value='<h1>I ♥ react-codemirror2</h1>'
-       ;    />
-       ;"
-       ;"
-       ;<CodeMirror\n  value='<h1>I ♥ react-codemirror2</h1>'\n  options={{\n    mode: 'xml',\n    theme: 'material',\n    lineNumbers: true\n  }}\n  onChange={(editor, data, value) => {\n  }}\n/>
-       ;"
-       "
-       <p>
-       Hi
-       </p>
-       "
-       ;trim)))
-      (babel/parse (clj->js {:sourceType "module"
-                             :plugins ["jsx"]}))
-      (utils/obj->clj true)
-      (get-in [:program :body 0])
-      (to-hiccup))))
-
-(defn parse-debug [code]
-  (-> code
-      (acorn/parse (clj->js {:plugins {:jsx true}}))))
-
-(def err (atom {}))
-
 (defn trim [code]
   (-> code
       (string/split-lines)
@@ -41,13 +11,13 @@
         (map string/trim)
         (string/join "\n"))))
 
+
 (defn parse [code]
   (-> code
       trim
       (babel/parse (clj->js {:sourceType "module" :plugins [:jsx]}))
       (utils/obj->clj true)
       (get-in [:program :body 0 :expression])))
-
 
 
 (defn is-not-capital-case [val]
@@ -75,9 +45,12 @@
 (def JSBlockStatement "BlockStatement")
 (def JSStringLiteral "StringLiteral")
 (def JSNumericLiteral "NumericLiteral")
+(def JSUnaryExpression "UnaryExpression")
 
+;;
+(def BooleanAttribute "BooleanAttribute")
 
-
+;; --- JSX ---
 ;; Element
 (def JSXElement "JSXElement")
 (def JSXFragment "JSXFragment")
@@ -106,11 +79,8 @@
 (def JSXText "JSXText")
 ;(def JSXTextCharacter "")
 ;(def JSXChildExpression "")
-
-;; From acorn
 (def JSXExpressionContainer "JSXExpressionContainer")
-;; New from me
-(def BooleanAttribute "BooleanAttribute")
+
 
 
 (defn get-operator-symbol [operator]
@@ -130,9 +100,7 @@
                         val (get-in attr [:value :value])
                         val-type (get-in attr [:value :type] BooleanAttribute)]
                     (condp = val-type
-                      BooleanAttribute
-                      [attr-key true]
-                      ;; unmatch
+                      BooleanAttribute [attr-key true]
                       [attr-key (-> attr :value to-hiccup)])))
 
         to-attrs (fn [attrs] (into {} (map to-attr attrs)))]
@@ -146,12 +114,10 @@
       is-map
       (condp = (get ast :type)
         JSXElement
-        (let [;-name (get-in ast [:openingElement :name :name])
-              ;name (get-tag -name)
-              name (-> (get-in ast [:openingElement :name])
+        (let [ name (-> (get-in ast [:openingElement :name])
                        to-hiccup)
-              -attrs (get-in ast [:openingElement :attributes])
-              attrs (to-attrs -attrs)
+              attrs (-> (get-in ast [:openingElement :attributes])
+                        to-attrs)
               children (get ast :children)]
           (cond
             (and (empty? attrs)
@@ -181,9 +147,6 @@
 
         JSXText
         (-> ast :value string/trim)
-        ;(let [value (get ast :value)]
-        ;  value)
-
 
         JSXExpressionContainer
         (let [node (get ast :expression)]
@@ -197,7 +160,6 @@
         JSThisExpression
         (symbol "this")
 
-
         JSIdentifier
         (let [val (get ast :name)
               type (get ast :internal-type)]
@@ -205,9 +167,9 @@
             :Key
             (keyword val)
             (symbol val)))
+
         JSLiteral
-        (let [val (get ast :value)]
-          val)
+        (-> ast :value)
 
         JSStringLiteral
         (-> ast :value)
@@ -218,8 +180,7 @@
         JSLogicalExpression
         (let [operator (-> ast :operator get-operator-symbol)
               left (-> ast :left to-hiccup)
-              right (-> ast :right to-hiccup)
-              right-type (get-in ast [:right :type])]
+              right (-> ast :right to-hiccup)]
           (list operator left right))
 
         JSConditionalExpression
@@ -237,13 +198,17 @@
               right (-> ast :right to-hiccup)]
           (list operator left right))
 
+        JSUnaryExpression
+        (let [operator (-> ast :operator)
+              arg (-> ast :argument to-hiccup)]
+          (list (symbol operator) arg))
+
         JSObjectExpression
         (let [props (get ast :properties)]
           (into {}
                 (for [p props]
                   (let [k (-> p :key (assoc :internal-type :Key) to-hiccup)
                         v (-> p :value to-hiccup)]
-                    ;v (-> p :value (assoc :internal-type :ObjectExpressionValue))]
                     [k v]))))
 
         JSMemberExpression
@@ -259,7 +224,7 @@
         JSBlockStatement
         (list (symbol "do") "something here")
 
-        [:unknown-type (get ast :type) (= JSXElement (get ast :type))])
+        [:unknown-type (get ast :type)])
       :else :unknown)))
 
 

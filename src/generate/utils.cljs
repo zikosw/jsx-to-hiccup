@@ -1,6 +1,5 @@
 (ns generate.utils
-  (:require ;[goog :as goog]
-            [goog.object :as gobj]))
+  (:require [goog.object :as gobj]))
 
 (defn obj->clj
   ([obj]
