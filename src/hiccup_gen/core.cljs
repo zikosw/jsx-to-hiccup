@@ -7,10 +7,9 @@
 
 (def state (atom {:code "" :hiccuped ""}))
 
+
 (defn convert-clicked []
   (swap! state assoc :error nil)
-  ;(prn :code (:code @state))
-  ;(prn :code-- (g/trim (:code @state)))
   (try
     (let [parsed (g/parse (:code @state))
           hiccuped (-> parsed g/to-hiccup)
@@ -20,6 +19,7 @@
     (catch js/Error e
       (js/console.log "Parse Error : " e.message)
       (swap! state assoc :error e.message))))
+
 
 (defn on-code-changed [e]
   (let [code (-> e .-target .-value)]
@@ -34,8 +34,7 @@
      [:div
       [:div
        [:textarea.form-control
-        {:style {:height 300
-                 :width 400}
+        {:style {:height 400}
          :on-change on-code-changed}]]
       [:button.btn.btn-success {:on-click convert-clicked} "Convert"]
 
@@ -49,8 +48,7 @@
 
 
 
-(reagent/render-component [home-panel]
-                          (. js/document (getElementById "app")))
+(reagent/render-component [home-panel] (. js/document (getElementById "app")))
 
 (defn on-js-reload [])
   ;; optionally touch your app-state to force rerendering depending on
