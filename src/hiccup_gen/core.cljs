@@ -5,47 +5,57 @@
 
 (enable-console-print!)
 
-(def state (atom {:code "" :hiccuped ""}))
+(def log js/console.log)
+
+(def code-mirror js/CodeMirror)
 
 
-(defn convert-clicked []
+(defn load-editor [{:keys [elem-id] :as config}]
+  (let [dom (js/document.getElementById elem-id)]
+    (set! dom.innerHTML "")
+    (code-mirror
+      dom
+      (clj->js (merge config {:theme "dracula" :lineNUmbers true})))))
+
+(defonce editor (load-editor {:elem-id "editor"
+                              :mode "jsx"
+                              :value "<div><p>Hello</p></div>"}))
+
+(defonce output (load-editor {:elem-id "output"
+                              :mode "clojure"
+                              :readOnly true
+                              :lineWrapping true
+                              ;:scrollbarStyle "null"
+                              :value "[:div [:p \"Hello\"]]\n"}))
+
+
+(def state (atom {:error nil :code ""}))
+
+(defn convert []
   (swap! state assoc :error nil)
   (try
-    (let [parsed (g/parse (:code @state))
+    (let [value (.getValue editor)
+          parsed (g/parse value)
           hiccuped (-> parsed g/to-hiccup)
           pretty (with-out-str (pp/pprint hiccuped))]
-      (pp/pprint parsed)
-      (swap! state assoc :hiccuped pretty))
+      (swap! state assoc :code pretty)
+      (.setValue output pretty))
     (catch js/Error e
       (js/console.log "Parse Error : " e.message)
       (swap! state assoc :error e.message))))
 
-
-(defn on-code-changed [e]
-  (let [code (-> e .-target .-value)]
-    (swap! state assoc :code code)))
-
+(js/setTimeout
+  (fn []
+    (log :register-onchange)
+    (.on editor "change" convert))
+  500)
 
 (defn home-panel []
-  (let [hiccuped (:hiccuped @state)
-        err-msg (:error @state)]
-    [:div.container
-     [:h1 "JSX to Hiccup"]
-     [:div
-      [:div
-       [:textarea.form-control
-        {:style {:height 400}
-         :on-change on-code-changed}]]
-      [:button.btn.btn-success {:on-click convert-clicked} "Convert"]
-
-      (if err-msg
-        [:div.alert.alert-danger (str err-msg)])
-
-      [:hr]
-      [:h3 "Hiccup Output"]
-      [:div
-       [:pre {:class "prettyprint lang-clojure"} hiccuped]]]]))
-
+  (let [error (:error @state)
+        code (:code @state)]
+    [:div
+      (if error
+        [:div.alert.alert-danger (str error)])]))
 
 
 (reagent/render-component [home-panel] (. js/document (getElementById "app")))

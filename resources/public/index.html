@@ -10,17 +10,59 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="icon" href="https://clojurescript.org/images/cljs-logo-icon-32.png">
+
+    <script src="https://codemirror.net/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css">
+    <script src="https://codemirror.net/mode/javascript/javascript.js"></script>
+    <script src="https://codemirror.net/mode/xml/xml.js"></script>
+    <script src="https://codemirror.net/mode/jsx/jsx.js"></script>
+    <script src="https://codemirror.net/mode/clojure/clojure.js"></script>
+    <style>
+        .CodeMirror {
+          border: 1px solid #eee;
+          height: auto;
+        }
+        .CodeMirror-scroll {
+          min-height: 500px;
+        }
+    </style>
+
 </head>
 <body>
+<div class="container">
+    <h1 style="display:None">JSX to Hiccup</h2>
+
     <a href="https://github.com/jigkoxsee/jsx-to-hiccup">
         <img style="position: absolute; top: 0; right: 0; border: 0;"
              src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
-             alt="Fork me on GitHub"></a>
-    <div id="app">
-        <h2>JSX to Hiccup</h2>
-        <p>Loading...</p>
+             alt="Fork me on GitHub"/>
+    </a>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>JSX code</h3>
+            <div id="editor">
+                Editor is loading ...
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div>
+                <h3>Hiccup output</h3>
+                <div id="app">
+                    <p>Loading...</p>
+                </div>
+                <div id="output">
+                    Editor is loading ...
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="js/compiled/hiccup_gen.js" type="text/javascript"></script>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+
+</div>
+<script src="js/compiled/hiccup_gen.js" type="text/javascript"></script>
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 </body>
 </html>
