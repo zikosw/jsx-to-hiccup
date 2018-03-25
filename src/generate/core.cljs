@@ -96,7 +96,10 @@
   (let [is-vector (vector? ast)
         is-map (map? ast)
         to-attr (fn [attr]
-                  (let [attr-key (keyword (get-in attr [:name :name]))
+                  (let [-key (get-in attr [:name :name])
+                        attr-key (keyword (case -key
+                                            "className" "class"
+                                            -key))
                         val (get-in attr [:value :value])
                         val-type (get-in attr [:value :type] BooleanAttribute)]
                     (condp = val-type
