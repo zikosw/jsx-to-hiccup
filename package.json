@@ -14,12 +14,8 @@
   },
   "dependencies": {
     "@cljs-oss/module-deps": "^1.1.1",
-    "acorn-jsx": "^4.1.1",
     "babel-core": "^6.26.0",
-    "codemirror": "^5.35.0",
     "react": "15.6.1",
-    "react-avatar": "2.3.0",
-    "react-codemirror2": "^4.1.0",
     "react-dom": "15.6.1",
     "webpack": "^3.8.1"
   }

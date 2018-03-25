@@ -1,6 +1,5 @@
 (ns generate.core
-  (:require ["acorn-jsx" :as acorn]
-            ["babylon" :as babel]
+  (:require ["babylon" :as babel]
             [generate.utils :as utils]
             [clojure.string :as string]))
 

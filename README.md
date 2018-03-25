@@ -7,6 +7,10 @@ Feel free to open an issue if you see something broken xD
 
 ## Setup
 
+To bundle node modules
+
+    yarn js
+
 To get an interactive development environment run:
 
     lein figwheel
