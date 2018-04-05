@@ -122,21 +122,14 @@
                         to-attrs)
               children (get ast :children)]
           (cond
-            (and (empty? attrs)
-                 (empty? children))
-            [name]
+            (and (empty? attrs))
+            (into [] (remove nil? (into [name] (to-hiccup children))))
 
-            (and (not (empty? attrs))
-                 (empty? children))
-            [name attrs]
-
-            (and (empty? attrs)
-                 (not (empty? children)))
-            [name (to-hiccup children)]
-
-            (and (not (empty? attrs))
-                 (not (empty? children)))
-            [name attrs (to-hiccup children)]))
+            (and (not (empty? attrs)))
+            (into [] (remove nil? (into [name attrs] (to-hiccup children))))))
+            
+        nil
+        nil
 
         JSXIdentifier
         (let [name (-> ast :name)]
@@ -148,7 +141,10 @@
           (get-tag (str left "." right)))
 
         JSXText
-        (-> ast :value string/trim)
+        (let [text (-> ast :value string/trim)]
+          (if (= text "")
+            nil
+            (list text)))
 
         JSXExpressionContainer
         (let [node (get ast :expression)]
